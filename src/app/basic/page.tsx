@@ -1,4 +1,4 @@
-import BasicFeature from '@/components/basic/basic-feature'
+import BasicFeature from '@/components/voting/voting-feature'
 
 export default function Page() {
   return <BasicFeature />

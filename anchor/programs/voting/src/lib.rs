@@ -1,10 +1,10 @@
-use anchor_lang::prelude::{borsh::de, *};
+use anchor_lang::prelude::*;
 
 declare_id!("HjtYhrJ8edmGLmdmX9inEA1EK3oaVMHLHTLjwAqBfJX7");
 
 #[program]
 pub mod voting {
-    use anchor_lang::solana_program::entrypoint::ProgramResult;
+    //use anchor_lang::solana_program::entrypoint::ProgramResult;
 
     use super::*;
 
