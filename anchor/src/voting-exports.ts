@@ -12,7 +12,7 @@ export const VOTING_PROGRAM_ID = new PublicKey(VotingIDL.address);
 
 // This is a helper function to get the Voting Anchor program.
 export function getVotingProgram(provider: AnchorProvider) {
-  return new Program(VotingIDL as Voting, provider);
+  return new Program(VotingIDL as Voting, provider) as Program<Voting>;
 }
 
 // This is a helper function to get the program ID for the Voting program depending on the cluster.

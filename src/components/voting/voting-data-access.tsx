@@ -1,6 +1,6 @@
 'use client';
 
-import { getVotingProgram, getVotingProgramId } from '@voting-dapp/anchor';
+import { getVotingProgram, getVotingProgramId } from '@project/anchor'
 import { Program, BN } from '@coral-xyz/anchor';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { Cluster, PublicKey } from '@solana/web3.js';
