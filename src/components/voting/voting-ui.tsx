@@ -57,7 +57,7 @@ function CandidateCard({ account }:
   useEffect(() => {
     if (candidateQuery.data) {
       setName(candidateQuery.data.candidateName ?? '');
-      setVotes(candidateQuery.data.candidateVotes ?? 0);
+      setVotes(candidateQuery.data.candidateVotes.toNumber() ?? 0);
     }
   }, [candidateQuery.data]);
   

@@ -2,8 +2,8 @@
 
 import { getVotingProgram, getVotingProgramId } from '@project/anchor'
 import { Program, BN } from '@coral-xyz/anchor';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { Cluster, PublicKey } from '@solana/web3.js';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Cluster, PublicKey,ComputeBudgetProgram,Transaction } from '@solana/web3.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -17,6 +17,8 @@ export function useVotingProgramCandidateAccount({ account }: { account: PublicK
   const provider = useAnchorProvider();
   const program = getVotingProgram(provider);
   const transactionToast = useTransactionToast();
+  const { connection } = useConnection();
+  const {publicKey,sendTransaction} = useWallet();
 
   const candidateQuery = useQuery({
     queryKey: ['candidate', { cluster, account }],
@@ -25,11 +27,33 @@ export function useVotingProgramCandidateAccount({ account }: { account: PublicK
 
   const vote = useMutation({
     mutationKey: ['voting', 'vote', { cluster }],
-    mutationFn: (candidate: string) =>
-      program.methods.vote(
+    mutationFn: async(candidate: string) =>{
+      const modifyComputeUnit = ComputeBudgetProgram.setComputeUnitLimit({
+     units: 8000
+      })
+  // Set priority fee (1 microLamports per compute unit)
+  let recentPrioritizationFees = await connection.getRecentPrioritizationFees({
+    lockedWritableAccounts: [new PublicKey(candidate)],
+  });
+
+  const minFee = Math.min(...recentPrioritizationFees.map(feeInfo => feeInfo.prioritizationFee));
+
+  const modifyPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+    microLamports: minFee+1
+  })
+     const vote = await program.methods.vote(
         candidate,
         new BN(1),
-      ).rpc(),
+      ).instruction();
+      const blockhashContext = await connection.getLatestBlockhashAndContext();
+      const tx = new Transaction({
+        feePayer: publicKey,
+        blockhash: blockhashContext.value.blockhash,
+        lastValidBlockHeight: blockhashContext.value.lastValidBlockHeight,
+      }).add(modifyComputeUnit).add(modifyPriorityFee).add(vote);
+
+      return await sendTransaction(tx, connection);
+    },
       onSuccess: (signature) => {
         transactionToast(signature);
         return candidateQuery.refetch();
