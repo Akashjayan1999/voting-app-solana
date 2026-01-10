@@ -32,9 +32,9 @@ export function useVotingProgramCandidateAccount({ account }: { account: PublicK
      units: 8000
       })
   // Set priority fee (1 microLamports per compute unit)
-  let recentPrioritizationFees = await connection.getRecentPrioritizationFees({
-    lockedWritableAccounts: [new PublicKey(candidate)],
-  });
+   let recentPrioritizationFees = await connection.getRecentPrioritizationFees({
+    lockedWritableAccounts: [new PublicKey("replace it with Candidate address")], //candiaate account id
+   });
 
   const minFee = Math.min(...recentPrioritizationFees.map(feeInfo => feeInfo.prioritizationFee));
 
